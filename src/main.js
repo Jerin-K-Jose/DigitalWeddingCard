@@ -21,6 +21,10 @@ import { SceneEnvelope } from './components/scene-envelope.js';
 import { SceneHero } from './components/scene-hero.js';
 import { SceneStory } from './components/scene-story.js';
 import { SceneLiturgy } from './components/scene-liturgy.js';
+import { SceneTimeline } from './components/scene-timeline.js';
+import { SceneVenue } from './components/scene-venue.js';
+import { SceneRSVP } from './components/scene-rsvp.js';
+import { SceneClosing } from './components/scene-closing.js';
 
 /* ── Globals ──────────────────────────────────────────────── */
 const PAGE_LOAD_TIME = Date.now();
@@ -52,6 +56,18 @@ async function bootstrap() {
   
   const sceneLiturgy = new SceneLiturgy(engine);
   engine.registerScene('liturgy', sceneLiturgy);
+
+  const sceneTimeline = new SceneTimeline(engine);
+  engine.registerScene('timeline', sceneTimeline);
+  
+  const sceneVenue = new SceneVenue(engine);
+  engine.registerScene('venue', sceneVenue);
+  
+  const sceneRSVP = new SceneRSVP(engine);
+  engine.registerScene('rsvp', sceneRSVP);
+  
+  const sceneClosing = new SceneClosing(engine);
+  engine.registerScene('closing', sceneClosing);
 
   await engine.transitionTo('loading'); // Shows particles + cross right away
 
