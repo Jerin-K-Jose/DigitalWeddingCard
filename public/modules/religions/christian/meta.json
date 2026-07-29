@@ -1,0 +1,29 @@
+{
+  "id": "christian",
+  "name": "Christian",
+  "version": "1.0.0",
+  "terminology": {
+    "ceremonyLabel": "Holy Matrimony",
+    "eventLabel": "Wedding",
+    "coupleLabel": "Bride & Groom",
+    "venueLabel": "Church",
+    "officiantLabel": "Pastor",
+    "blessingLabel": "A verse for the journey"
+  },
+  "scene5": {
+    "enabled": true,
+    "type": "scripture",
+    "primarySymbol": "cross",
+    "showVerseReference": true
+  },
+  "symbols": {
+    "primary": "cross",
+    "secondary": "dove",
+    "tertiary": "rings",
+    "file": "symbols.svg"
+  },
+  "loadingSymbol": "cross",
+  "envelopeSeal": "cross",
+  "compatibleThemes": ["ivory-gold", "blush-rose", "midnight-navy", "emerald-sage"],
+  "preferredTheme": "ivory-gold"
+}
