@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment secrets
+.env
+.env.local
+.env.production
+
+# Build output
+dist/
+build/
+.output/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Cloudflare
+.wrangler/
+
+# Temp / scratch
+*.tmp
+*.temp
