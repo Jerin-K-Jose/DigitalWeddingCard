@@ -59,24 +59,26 @@ Each prompt builds exactly ONE scene, fully:
 - [x] Task tracker created
 - [x] Initial commit: `d199aff`
 
-### Foundation (Shell + Engine) 🔲 NOT STARTED
-Must complete before Scene 01:
-- [ ] `index.html` shell
-- [ ] `src/main.js` bootstrap
-- [ ] `src/engine/scene-engine.js`
-- [ ] `src/engine/pack-loader.js`
-- [ ] `public/packs/themes/ivory-gold/tokens.css`
-- [ ] `public/packs/typography/serif-classic/fonts.css`
-- [ ] `public/packs/layouts/cinematic-scroll/layout.css`
-- [ ] `clients/james-mary-2026/config.json`
-- [ ] Commit: `feat(foundation): project shell, scene engine, design tokens`
+### Foundation (Shell + Engine) ✅ COMPLETE
+- [x] `index.html` shell (critical CSS inlined, semantic HTML, ARIA)
+- [x] `src/main.js` bootstrap (URL resolution, config fetch, metadata)
+- [x] `src/engine/scene-engine.js` (state machine, lerp scroll, idle detection)
+- [x] `src/engine/pack-loader.js` (CSS/JS loading, SVG injection, fallbacks)
+- [x] `public/packs/themes/ivory-gold/tokens.css` (80+ CSS custom properties)
+- [x] `public/packs/typography/serif-classic/fonts.css` (Cormorant + Lato)
+- [x] `public/packs/layouts/cinematic-scroll/layout.css` (full base layout)
+- [x] `clients/james-mary-2026/config.json` (complete client config)
+- [x] `public/modules/religions/christian/` (meta.json + symbols.svg)
+- [x] `public/lang/en.json` (all strings for 10 scenes)
+- [x] Committed: `b0b03a5` — feat(foundation+scene-01)
 
-### Scene 01 — Loading 🔲 NOT STARTED
-- [ ] Tiny cross/logo centered
-- [ ] Gold particle system (Canvas)
-- [ ] Assets preloading silently in background
-- [ ] Fade to Scene 02 when ready
-- [ ] Commit: `feat(scene-01): loading screen with particles and asset preload`
+### Scene 01 — Loading ✅ COMPLETE
+- [x] Cross SVG centered with breathing glow animation
+- [x] Gold particle system (Canvas 2D, twinkling, device-aware count)
+- [x] Page Visibility API pause (battery saving)
+- [x] 1600ms minimum display + async asset load detection
+- [x] Graceful transition to Scene 02 (placeholder until next prompt)
+- [x] Committed: `b0b03a5` — feat(foundation+scene-01)
 
 ### Scene 02 — Envelope 🔲 NOT STARTED
 - [ ] 3D envelope CSS animation
@@ -263,8 +265,8 @@ Must complete before Scene 01:
 | Commit | Message | Phase |
 |---|---|---|
 | `d199aff` | `docs: initialize project foundation, architecture, and complete platform blueprint` | Pre-build |
-| *(next)* | `feat(foundation): project shell, scene engine, design tokens, config` | Foundation |
-| *(next)* | `feat(scene-01): loading screen with particles and asset preload` | Scene 01 |
+| `e29fdf0` | `docs: add PROGRESS.md tracker, unified 10-scene design v2, and PDF analysis` | Pre-build |
+| `b0b03a5` | `feat(foundation+scene-01): shell, engine, design tokens, and loading screen` | Foundation + Scene 01 ✅ |
 | *(next)* | `feat(scene-02): envelope with wax seal and opening animation` | Scene 02 |
 
 ---
@@ -304,5 +306,5 @@ I can run the `git remote add` and `git push` commands directly.
 
 - **Date**: 2026-07-29
 - **By**: Antigravity (AI)
-- **Commit**: `d199aff`
-- **Next Action**: Foundation build (shell + engine) → Scene 01
+- **Commit**: `b0b03a5`
+- **Next Action**: Scene 02 — Envelope with wax seal (next prompt)
