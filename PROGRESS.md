@@ -80,13 +80,14 @@ Each prompt builds exactly ONE scene, fully:
 - [x] Graceful transition to Scene 02 (placeholder until next prompt)
 - [x] Committed: `b0b03a5` — feat(foundation+scene-01)
 
-### Scene 02 — Envelope 🔲 NOT STARTED
-- [ ] 3D envelope CSS animation
-- [ ] Wax seal SVG with glow
-- [ ] Tap/click → envelope opens
-- [ ] Card slides upward out of envelope
-- [ ] Transition to Scene 03
-- [ ] Commit: `feat(scene-02): envelope with wax seal and opening animation`
+### Scene 02 — Envelope ✅ COMPLETE
+- [x] 3D envelope CSS animation (preserve-3d, rotateX)
+- [x] Wax seal SVG with glowing drop-shadows
+- [x] Tap/click → envelope opens (flap lifts, seal cracks)
+- [x] Card slides upward out of envelope
+- [x] Haptic feedback on tap
+- [x] Transition to Scene 03 and scroll mode enabled
+- [x] Committed: `feat(scene-02)`
 
 ### Scene 03 — Hero / Announcement 🔲 NOT STARTED
 - [ ] Couple names (per-character reveal)
@@ -267,7 +268,8 @@ Each prompt builds exactly ONE scene, fully:
 | `d199aff` | `docs: initialize project foundation, architecture, and complete platform blueprint` | Pre-build |
 | `e29fdf0` | `docs: add PROGRESS.md tracker, unified 10-scene design v2, and PDF analysis` | Pre-build |
 | `b0b03a5` | `feat(foundation+scene-01): shell, engine, design tokens, and loading screen` | Foundation + Scene 01 ✅ |
-| *(next)* | `feat(scene-02): envelope with wax seal and opening animation` | Scene 02 |
+| *(recent)* | `feat(scene-02): envelope with wax seal and opening animation` | Scene 02 ✅ |
+| *(next)* | `feat(scene-03): hero announcement with names and family wording` | Scene 03 |
 
 ---
 
@@ -307,4 +309,4 @@ I can run the `git remote add` and `git push` commands directly.
 - **Date**: 2026-07-29
 - **By**: Antigravity (AI)
 - **Commit**: `b0b03a5`
-- **Next Action**: Scene 02 — Envelope with wax seal (next prompt)
+- **Next Action**: Scene 03 — Hero / Announcement (next prompt)

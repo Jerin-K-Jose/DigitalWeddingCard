@@ -17,6 +17,7 @@
 import { SceneEngine }  from './engine/scene-engine.js';
 import { PackLoader }   from './engine/pack-loader.js';
 import { SceneLoading } from './components/scene-loading.js';
+import { SceneEnvelope } from './components/scene-envelope.js';
 
 /* ── Globals ──────────────────────────────────────────────── */
 const PAGE_LOAD_TIME = Date.now();
@@ -36,6 +37,10 @@ async function bootstrap() {
   // ── 4. Activate Scene 01 immediately ───────────────────────
   const sceneLoading = new SceneLoading(engine, canvas);
   engine.registerScene('loading', sceneLoading);
+  
+  const sceneEnvelope = new SceneEnvelope(engine);
+  engine.registerScene('envelope', sceneEnvelope);
+
   await engine.transitionTo('loading'); // Shows particles + cross right away
 
   // ── 5. Fetch client config ──────────────────────────────────
