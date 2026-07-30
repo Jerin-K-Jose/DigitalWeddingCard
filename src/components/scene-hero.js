@@ -120,10 +120,10 @@ export class SceneHero {
       <div class="hero-content">
         <div class="hero-invitation" data-i18n="invitation_to">Together with their families</div>
         <h1 class="hero-names">
-          ${config.client.bride.firstName} <br/>&<br/> ${config.client.groom.firstName}
+          ${config.couple.brideName} <br/>&<br/> ${config.couple.groomName}
         </h1>
         <div class="hero-date">
-          ${new Date(config.client.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          ${config.ceremony.date}
         </div>
       </div>
       

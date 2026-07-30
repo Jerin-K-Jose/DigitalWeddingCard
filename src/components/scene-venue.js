@@ -25,6 +25,11 @@ export class SceneVenue {
   }
 
   render() {
+    const config = window.__config;
+    const venueName = config?.ceremony?.venue || "St. George's Cathedral";
+    const venueAddress = config?.ceremony?.address || "224 Cathedral Road, Chennai, Tamil Nadu 600086";
+    const mapsUrl = config?.ceremony?.mapsUrl || "https://maps.google.com";
+
     this.el.innerHTML = `
       <style>
         #scene-venue {
@@ -89,12 +94,11 @@ export class SceneVenue {
       </style>
       
       <div class="venue-container">
-        <h2 class="venue-title">St. George's Cathedral</h2>
+        <h2 class="venue-title">${venueName}</h2>
         <div class="venue-address">
-          224 Cathedral Road, <br/>
-          Chennai, Tamil Nadu 600086
+          ${venueAddress}
         </div>
-        <a href="https://maps.google.com" target="_blank" class="btn-directions" data-i18n="directions">Get Directions</a>
+        <a href="${mapsUrl}" target="_blank" class="btn-directions" data-i18n="directions">Get Directions</a>
       </div>
     `;
   }

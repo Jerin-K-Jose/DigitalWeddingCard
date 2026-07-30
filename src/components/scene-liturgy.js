@@ -26,13 +26,16 @@ export class SceneLiturgy {
   }
 
   render() {
-    // Default fallback verse if module isn't loaded
+    const config = window.__config;
+    
+    // Fallback if config is missing
     const defaultVerse = {
       text: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
       reference: "1 Corinthians 13:4"
     };
 
-    const verse = window.__religionModule?.verseBank?.[0] || defaultVerse;
+    const verseText = config?.liturgy?.text || defaultVerse.text;
+    const verseRef = config?.liturgy?.verse || defaultVerse.reference;
     const verseIcon = window.__religionModule?.verseIcon || 'cross';
 
     this.el.innerHTML = `
@@ -89,8 +92,8 @@ export class SceneLiturgy {
       
       <div class="liturgy-container">
         <svg class="liturgy-icon" viewBox="0 0 40 64"><use href="#${verseIcon}"></use></svg>
-        <div class="liturgy-text">"${verse.text}"</div>
-        <div class="liturgy-ref">${verse.reference}</div>
+        <div class="liturgy-text">"${verseText}"</div>
+        <div class="liturgy-ref">${verseRef}</div>
       </div>
     `;
   }
