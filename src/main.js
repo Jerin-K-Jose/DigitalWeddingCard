@@ -97,12 +97,27 @@ async function bootstrap() {
   const loader = new PackLoader(config);
   await loader.loadCriticalPacks();
 
-  // ── 7. Load religion module (non-blocking — runs in parallel) ──
-  loader.loadReligionModule().catch(err =>
-    console.warn('[DWP] Religion module failed:', err)
-  );
+  // ── 7. Load religion module ───────────────────────────────────
+  try {
+    await loader.loadReligionModule();
+  } catch (err) {
+    console.warn('[DWP] Religion module failed:', err);
+  }
 
-  // ── 8. Apply document metadata from config ──────────────────
+  // ── 8. Initialize Scroll Scenes ───────────────────────────────
+  // Construct the DOM for all scenes in the scroll experience now.
+  // They remain hidden until scene-envelope unlocks scroll mode.
+  await Promise.all([
+    sceneHero.enter(),
+    sceneStory.enter(),
+    sceneLiturgy.enter(),
+    sceneTimeline.enter(),
+    sceneVenue.enter(),
+    sceneRSVP.enter(),
+    sceneClosing.enter()
+  ]);
+
+  // ── 9. Apply document metadata from config ──────────────────
   applyMetadata(config);
 
   // ── 9. Signal Scene 01: assets ready → transition out ──────

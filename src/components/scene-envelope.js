@@ -467,15 +467,8 @@ export class SceneEnvelope {
     // Step 3: Card expands to fill screen, envelope drops away
     wrapper.classList.add('is-expanded');
     
-    // Step 4: Scroll mode & next scene
+    // Step 4: Scroll mode
     this.engine.enableScrollMode();
-    await this._sleep(400); // Overlap the transition seamlessly
-    
-    if (this.engine._scenes.has('hero')) {
-      await this.engine.transitionTo('hero');
-    } else {
-      this._showWaitingState(el);
-    }
   }
   
   _showWaitingState(el) {

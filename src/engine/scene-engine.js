@@ -94,8 +94,9 @@ export class SceneEngine {
       preScrollEl.style.pointerEvents = 'none';
     }
 
-    // Re-enable body scroll
-    document.body.style.overflow = '';
+    // Re-enable body and html scroll (override the CSS overflow: hidden)
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
 
     // Show progress bar
     const bar = document.getElementById('progress-bar');
