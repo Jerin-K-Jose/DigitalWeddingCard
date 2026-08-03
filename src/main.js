@@ -1,77 +1,15 @@
 /**
- * main.js — Bootstrap entry point
- *
- * Execution order:
- *   1. Parse client ID from URL
- *   2. Activate Scene 01 (loading) immediately
- *   3. Start particle canvas
- *   4. Fetch client config
- *   5. Load critical packs (theme + typography + layout CSS)
- *   6. Load religion module (SVG symbols injected into DOM)
- *   7. Apply document metadata (title, OG tags)
- *   8. Signal Scene 01 that assets are ready → transition begins
- *
- * /src/main.js
+ * main.js
+ * Single, lightweight controller for the Digital Wedding Card.
+ * Replaces the complex scene-engine architecture with simple DOM hydration.
  */
 
-import { SceneEngine }  from './engine/scene-engine.js';
-import { PackLoader }   from './engine/pack-loader.js';
-import { SceneLoading } from './components/scene-loading.js';
-import { SceneEnvelope } from './components/scene-envelope.js';
-import { SceneHero } from './components/scene-hero.js';
-import { SceneStory } from './components/scene-story.js';
-import { SceneLiturgy } from './components/scene-liturgy.js';
-import { SceneTimeline } from './components/scene-timeline.js';
-import { SceneVenue } from './components/scene-venue.js';
-import { SceneRSVP } from './components/scene-rsvp.js';
-import { SceneClosing } from './components/scene-closing.js';
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Determine client ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientId = urlParams.get('c') || 'james-mary-2026';
 
-/* ── Globals ──────────────────────────────────────────────── */
-const PAGE_LOAD_TIME = Date.now();
-
-/* ── Bootstrap ────────────────────────────────────────────── */
-async function bootstrap() {
-  // ── 1. Resolve client ID from URL ──────────────────────────
-  const clientId = resolveClientId();
-
-  // ── 2. Get DOM references ───────────────────────────────────
-  const canvas = document.getElementById('particle-canvas');
-
-  // ── 3. Initialize the scene engine ─────────────────────────
-  const engine = new SceneEngine();
-  window.__engine = engine; // Dev access in console
-
-  // ── 4. Activate Scene 01 immediately ───────────────────────
-  const sceneLoading = new SceneLoading(engine, canvas);
-  engine.registerScene('loading', sceneLoading);
-  
-  const sceneEnvelope = new SceneEnvelope(engine);
-  engine.registerScene('envelope', sceneEnvelope);
-
-  const sceneHero = new SceneHero(engine);
-  engine.registerScene('hero', sceneHero);
-  
-  const sceneStory = new SceneStory(engine);
-  engine.registerScene('story', sceneStory);
-  
-  const sceneLiturgy = new SceneLiturgy(engine);
-  engine.registerScene('liturgy', sceneLiturgy);
-
-  const sceneTimeline = new SceneTimeline(engine);
-  engine.registerScene('timeline', sceneTimeline);
-  
-  const sceneVenue = new SceneVenue(engine);
-  engine.registerScene('venue', sceneVenue);
-  
-  const sceneRSVP = new SceneRSVP(engine);
-  engine.registerScene('rsvp', sceneRSVP);
-  
-  const sceneClosing = new SceneClosing(engine);
-  engine.registerScene('closing', sceneClosing);
-
-  await engine.transitionTo('loading'); // Shows particles + cross right away
-
-  // ── 5. Fetch client config ──────────────────────────────────
+  // 2. Fetch Configuration
   let config;
   try {
     const res = await fetch(`/clients/${clientId}/config.json`);
@@ -79,117 +17,196 @@ async function bootstrap() {
     config = await res.json();
   } catch (err) {
     console.error(`[DWP] Config load failed for "${clientId}":`, err);
-    // Graceful fallback: try default client
     try {
       const res = await fetch('/clients/james-mary-2026/config.json');
-      config    = await res.json();
+      config = await res.json();
     } catch (fallbackErr) {
-      console.error('[DWP] Fallback config also failed:', fallbackErr);
-      sceneLoading.onAssetsReady(); // Proceed anyway — blank state
+      console.error('[DWP] Fallback config also failed. Stopping.');
       return;
     }
   }
 
-  // Store globally so all scenes can access config
-  window.__config = config;
+  // 3. Hydrate DOM
+  hydrateDOM(config);
 
-  // ── 6. Load critical CSS packs ──────────────────────────────
-  const loader = new PackLoader(config);
-  await loader.loadCriticalPacks();
-
-  // ── 7. Load religion module ───────────────────────────────────
-  try {
-    await loader.loadReligionModule();
-  } catch (err) {
-    console.warn('[DWP] Religion module failed:', err);
-  }
-
-  // ── 8. Initialize Scroll Scenes ───────────────────────────────
-  // Construct the DOM for all scenes in the scroll experience now.
-  // They remain hidden until scene-envelope unlocks scroll mode.
-  await Promise.all([
-    sceneHero.enter(),
-    sceneStory.enter(),
-    sceneLiturgy.enter(),
-    sceneTimeline.enter(),
-    sceneVenue.enter(),
-    sceneRSVP.enter(),
-    sceneClosing.enter()
-  ]);
-
-  // ── 9. Apply document metadata from config ──────────────────
-  applyMetadata(config);
-
-  // ── 9. Signal Scene 01: assets ready → transition out ──────
-  sceneLoading.onAssetsReady();
-
-  // ── 10. Dev timing log ─────────────────────────────────────
-  if (import.meta.env?.DEV || location.hostname === 'localhost') {
-    console.info(
-      `[DWP] Bootstrap complete in ${Date.now() - PAGE_LOAD_TIME}ms`,
-      { clientId, config }
-    );
-  }
-}
-
-/* ── URL Parsing ──────────────────────────────────────────── */
-
-/**
- * Resolve client ID from:
- *   1. URL pathname:      invite.domain.com/james-mary-2026
- *   2. Query parameter:   ?c=james-mary-2026  (local dev)
- *   3. Default fallback:  james-mary-2026
- */
-function resolveClientId() {
-  // Pathname (production Cloudflare Pages)
-  const path = location.pathname.replace(/^\/+|\/+$/g, '');
-  if (path && path !== 'index.html' && !path.includes('.')) {
-    return path;
-  }
-
-  // Query param (local development)
-  const param = new URLSearchParams(location.search).get('c');
-  if (param) return param;
-
-  // Default
-  return 'james-mary-2026';
-}
-
-/* ── Metadata ─────────────────────────────────────────────── */
-
-function applyMetadata(config) {
-  const { couple, ceremony, media } = config;
-
-  const title       = `${couple.groomName} & ${couple.brideName}'s Wedding`;
-  const description = `${ceremony.date} · ${ceremony.time} · ${ceremony.venue}`;
-  const ogImage     = media?.ogCoverImage || '';
-  const canonical   = location.href;
-
-  document.title = title;
-
-  setMeta('description',               description);
-  setMeta('og:title',                  title,       true);
-  setMeta('og:description',            description, true);
-  setMeta('og:image',                  ogImage,     true);
-  setMeta('og:url',                    canonical,   true);
-  setMeta('twitter:title',             title);
-  setMeta('twitter:description',       description);
-  setMeta('twitter:image',             ogImage);
-
-  // Set lang attribute
-  const lang = config.language?.default || 'en';
-  document.documentElement.lang = lang;
-}
-
-function setMeta(name, content, isProperty = false) {
-  const selector = isProperty
-    ? `meta[property="${name}"]`
-    : `meta[name="${name}"]`;
-  const el = document.querySelector(selector);
-  if (el) el.setAttribute('content', content);
-}
-
-/* ── Run ──────────────────────────────────────────────────── */
-bootstrap().catch(err => {
-  console.error('[DWP] Fatal bootstrap error:', err);
+  // 4. Initialize Animations and Interactions
+  initPetals();
+  initParallax();
+  initEnvelope();
+  initScrollReveal();
+  initCountdown(config.ceremony.dateISO, config.ceremony.time);
 });
+
+function hydrateDOM(config) {
+  // Meta
+  document.getElementById('doc-title').textContent = `${config.couple.brideName} & ${config.couple.groomName} — Wedding Invitation`;
+  
+  // Envelope Seal
+  document.getElementById('seal-initials').textContent = `${config.couple.brideName[0]}&${config.couple.groomName[0]}`;
+  
+  // Hero
+  document.getElementById('hero-bride').textContent = config.couple.brideName;
+  document.getElementById('hero-groom').textContent = config.couple.groomName;
+  document.getElementById('hero-date').textContent = config.ceremony.date;
+
+  // Story
+  document.getElementById('story-tagline').textContent = config.couple.tagline || 'Two hearts, one grace';
+  document.getElementById('story-text').textContent = config.couple.story || 'What began as a quiet friendship grew into a love built on faith. We can\'t wait to celebrate this new chapter with the people who shaped us.';
+  
+  // Liturgy
+  document.getElementById('liturgy-text').textContent = config.liturgy?.text || 'Love is patient, love is kind.';
+  document.getElementById('liturgy-ref').textContent = config.liturgy?.verse || '1 Corinthians 13:4';
+
+  // Invitation Text
+  const famGroom = config.couple.groomFamilyLine || 'Mr. & Mrs. Johnson';
+  const famBride = config.couple.brideFamilyLine || 'Mr. & Mrs. George';
+  document.getElementById('family-invitation-text').innerHTML = `${famBride} and ${famGroom} joyfully invite you to witness the union of their children in holy matrimony, and to ask God's blessing upon their new life together.`;
+
+  // Timeline
+  const timelineContainer = document.getElementById('timeline-container');
+  timelineContainer.innerHTML = ''; // Clear stub
+  const events = [
+    { time: config.ceremony.time, label: 'Holy Matrimony', sub: config.ceremony.venue },
+  ];
+  if (config.reception?.enabled) {
+    events.push({ time: config.reception.time, label: 'Reception', sub: config.reception.venue });
+  }
+  if (config.dinner?.enabled) {
+    events.push({ time: config.dinner.time, label: 'Dinner & Celebration', sub: config.dinner.venue });
+  }
+
+  events.forEach(ev => {
+    timelineContainer.innerHTML += `
+      <div class="t-row">
+        <div class="t-time">${ev.time.replace(/ AM| PM/i, '')}</div>
+        <div>
+          <div class="t-label">${ev.label}</div>
+          <div class="t-sub">${ev.sub}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Venues
+  const venuesContainer = document.getElementById('venues-container');
+  venuesContainer.innerHTML = '';
+  const venues = [
+    { title: config.ceremony.venue, address: config.ceremony.address, url: config.ceremony.mapsUrl }
+  ];
+  if (config.reception?.enabled && config.reception.venue !== config.ceremony.venue) {
+    venues.push({ title: config.reception.venue, address: config.reception.address, url: config.reception.mapsUrl });
+  }
+  
+  venues.forEach(v => {
+    venuesContainer.innerHTML += `
+      <div class="venue-card">
+        <h3>${v.title}</h3>
+        <p>${v.address}</p>
+        <a href="${v.url}" target="_blank" rel="noopener noreferrer">View on Map</a>
+      </div>
+    `;
+  });
+
+  // RSVP
+  if (config.rsvp?.deadline) {
+    document.getElementById('rsvp-deadline').textContent = `Please respond by ${config.rsvp.deadline}`;
+  }
+
+  // Footer
+  document.getElementById('footer-text').textContent = `${config.couple.brideName} & ${config.couple.groomName} · ${config.ceremony.date}`;
+}
+
+// --- Animation & Interaction Logic ---
+
+function initPetals() {
+  const petalHost = document.getElementById('petals');
+  if (!petalHost) return;
+  for (let i = 0; i < 9; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = (i * 11 + Math.random() * 8) + 'vw';
+    p.style.animationDuration = (7 + Math.random() * 5) + 's, ' + (2.5 + Math.random()) + 's';
+    p.style.animationDelay = (i * -1.4) + 's, ' + (i * -0.4) + 's';
+    p.style.transform = 'scale(' + (0.6 + Math.random() * 0.8) + ')';
+    petalHost.appendChild(p);
+  }
+}
+
+function initParallax() {
+  const depthEls = [...document.querySelectorAll('[data-speed]')];
+  let ticking = false;
+  function parallax() {
+    const vh = window.innerHeight;
+    depthEls.forEach(el => {
+      const r = el.parentElement.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) return; // skip offscreen
+      const speed = parseFloat(el.dataset.speed);
+      el.style.transform = 'translate3d(0,' + (r.top * speed) + 'px,0)';
+    });
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(parallax); ticking = true; }
+  }, {passive:true});
+  parallax();
+}
+
+function initEnvelope() {
+  const gate = document.getElementById('gate');
+  const env = document.getElementById('envelope');
+  if (!env || !gate) return;
+  
+  env.addEventListener('click', () => {
+    if (env.classList.contains('open')) return;
+    env.classList.add('open');
+    setTimeout(() => gate.classList.add('hidden'), 550);
+  }, {once:true});
+}
+
+function initScrollReveal() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { 
+      if (e.isIntersecting) { 
+        e.target.classList.add('in'); 
+        io.unobserve(e.target); 
+      } 
+    });
+  }, {threshold: 0.15}); // slightly lower threshold for better mobile feel
+  
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+function initCountdown(dateISO, timeStr) {
+  if (!dateISO) return;
+  // Combine date and time for target
+  const timeStrClean = timeStr ? timeStr.replace(/ AM| PM/i, ':00') : '00:00:00';
+  const target = new Date(`${dateISO}T${timeStrClean}`);
+  
+  function tick() {
+    const diff = target - new Date();
+    if (diff <= 0) return;
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor(diff%86400000/3600000);
+    const m = Math.floor(diff%3600000/60000);
+    
+    const elD = document.getElementById('cd-d');
+    const elH = document.getElementById('cd-h');
+    const elM = document.getElementById('cd-m');
+    
+    if (elD) elD.textContent = d;
+    if (elH) elH.textContent = h;
+    if (elM) elM.textContent = m;
+  }
+  
+  tick(); 
+  setInterval(tick, 30000);
+}
+
+// RSVP (client-side stub)
+const rsvpForm = document.getElementById('rsvpForm');
+if (rsvpForm) {
+  rsvpForm.addEventListener('submit', e => {
+    e.preventDefault();
+    e.target.querySelector('.btn').textContent = 'Received ✓';
+  });
+}
